@@ -15,14 +15,14 @@ void Application::InitVariables(void)
 	//m_pGuideCube->GenerateCube(10.0f, C_WHITE);
 	m_pMesh = new MyMesh();
 	//m_pMesh->GenerateCone(1.0f, 2.0f, 8, vector3(0.0f, 0.0f, 0.0f));
-
 	pShip = new Model();
 	pShip->Load("Minecraft\\Steve.obj");
+	playerRB = new MyRigidBody(pShip->GetVertexList());
 	
 #pragma endregion
 
 	//Please change to your name and email
-	m_sProgramer = "Nathan Hambley - nhambley6@gmail.com";
+	m_sProgramer = "Nathan Hambley - nhambley6@gmail.com\nConor Lilley - conorqlilley@gmail.com\nFrederick DiTondo - fredsemail@gmail.com";
 }
 void Application::Update(void)
 {
@@ -38,16 +38,17 @@ void Application::Update(void)
 
 	// Is the first person camera active?
 	CameraRotation();
-
-	/* set player ship stuff
-	matrix4 mPlayer = glm::translate(shipPos) * ToMatrix4(qShip) * ToMatrix4(m_qArcBall);
+	shipPos = m_pCameraMngr->GetPosition();
+	shipPos.y -= 3;
+	 //set player ship stuff
+	matrix4 mPlayer = glm::translate(shipPos) * ToMatrix4(qShip) * ToMatrix4(m_qArcBall);//glm::translate(vector3(2.25f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, glm::radians(-55.0f), AXIS_Z);
 	pShip->SetModelMatrix(mPlayer);
 	playerRB->SetModelMatrix(mPlayer);
 	m_pMeshMngr->AddAxisToRenderList(mPlayer);
 
 	pShip->AddToRenderList();
 	playerRB->AddToRenderList();
-	*/
+	
 #pragma endregion
 }
 void Application::Display(void)
@@ -58,11 +59,9 @@ void Application::Display(void)
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
 	matrix4 m4Orientation;
-	std::vector<vector3> cubePoints = m_pGuideCube->GetVertexList();
+	//std::vector<vector3> cubePoints = m_pGuideCube->GetVertexList();
 
 
-	//calculate the current position
-	//vector3 v3CurrentPos = glm::lerp(v3Start, v3End, fPercentage);
 	matrix4 m4Model = ToMatrix4(m_qArcBall) /* glm::translate(IDENTITY_M4, v3CurrentPos) */ * m4Orientation;
 
 	m_pMesh->Render(m4Projection, m4View, m4Model);
@@ -81,28 +80,6 @@ void Application::Display(void)
 
 	//end the current frame (internally swaps the front and back buffers)
 	m_pWindow->display();
-
-#pragma region DOES NOT NEED CHANGES
-	/*
-		This part does not need any changes at all, it is just for rendering the guide cube, the 
-		skybox as a frame of reference and the gui display
-	*/
-	//Render the guide cube
-	m_pGuideCube->Render(m4Projection, m4View, ToMatrix4(m_qArcBall)); 
-
-	// draw a skybox
-	m_pMeshMngr->AddSkyboxToRenderList();
-	//render list call
-	m_uRenderCallCount = m_pMeshMngr->Render();
-	//clear the render list
-	m_pMeshMngr->ClearRenderList();
-		
-	//draw gui
-	DrawGUI();
-	
-	//end the current frame (internally swaps the front and back buffers)
-	m_pWindow->display();
-#pragma endregion
 }
 
 void Application::Release(void)
@@ -114,4 +91,5 @@ void Application::Release(void)
 	//deallocate it before ending the program
 	SafeDelete(m_pMesh);
 	SafeDelete(m_pGuideCube);
+	SafeDelete(pShip);
 }
