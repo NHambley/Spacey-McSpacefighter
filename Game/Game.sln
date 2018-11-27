@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{768F8227-DD45-4B44-93AA-1A2671FAC4B1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "A06 - Octree", "A06 - Octree\A06 - Octree.vcxproj", "{44D2C07B-798D-461B-9019-DFB240593888}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,12 @@ Global
 		{768F8227-DD45-4B44-93AA-1A2671FAC4B1}.Release|x64.Build.0 = Release|x64
 		{768F8227-DD45-4B44-93AA-1A2671FAC4B1}.Release|x86.ActiveCfg = Release|Win32
 		{768F8227-DD45-4B44-93AA-1A2671FAC4B1}.Release|x86.Build.0 = Release|Win32
+		{44D2C07B-798D-461B-9019-DFB240593888}.Debug|x64.ActiveCfg = Debug|Win32
+		{44D2C07B-798D-461B-9019-DFB240593888}.Debug|x86.ActiveCfg = Debug|Win32
+		{44D2C07B-798D-461B-9019-DFB240593888}.Debug|x86.Build.0 = Debug|Win32
+		{44D2C07B-798D-461B-9019-DFB240593888}.Release|x64.ActiveCfg = Release|Win32
+		{44D2C07B-798D-461B-9019-DFB240593888}.Release|x86.ActiveCfg = Release|Win32
+		{44D2C07B-798D-461B-9019-DFB240593888}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
