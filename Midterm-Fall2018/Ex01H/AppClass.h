@@ -28,6 +28,11 @@ class Application
 	Model* pShip = nullptr;// the player's ship model
 	quaternion qShip; // the quaternion for the player's ship
 	MyRigidBody* playerRB = nullptr;
+
+	std::vector<vector3> asteroidPos; // positino of the player's ship
+	Model* aster = nullptr;// the player's ship model
+	quaternion qAster; // the quaternion for the player's ship
+	std::vector<MyRigidBody*> asterRB;
 	
 
 private:
@@ -108,6 +113,7 @@ public:
 #pragma endregion
 
 private:
+	void InitAster(Model *aster,uint index);
 #pragma region Initialization / Release
 	/*
 	USAGE: Initialize the window

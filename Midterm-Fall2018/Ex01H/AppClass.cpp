@@ -16,6 +16,9 @@ void Application::InitVariables(void)
 
 	m_pMesh = new MyMesh();
 	//m_pMesh->GenerateCone(1.0f, 2.0f, 8, vector3(0.0f, 0.0f, 0.0f));
+
+	InitAster(aster, 50);
+	
 	pShip = new Model();
 	pShip->Load("Minecraft\\Steve.obj");
 	playerRB = new MyRigidBody(pShip->GetVertexList());
@@ -41,6 +44,20 @@ void Application::Update(void)
 	CameraRotation();
 	shipPos = m_pCameraMngr->GetPosition();
 	shipPos.y -= 3;
+
+	for (uint i = 0; i < 50; i++)
+	{
+		aster = new Model();
+		aster->Load("Minecraft\\Cube.obj");
+		asterRB.push_back(new MyRigidBody(aster->GetVertexList()));
+		asteroidPos.push_back(vector3(rand() % 100-50, rand() % 100-50, rand() % 100-50));
+		matrix4 mAster = glm::translate(asteroidPos[i]) * ToMatrix4(qAster);//glm::translate(vector3(2.25f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, glm::radians(-55.0f), AXIS_Z);
+		aster->SetModelMatrix(mAster);
+		asterRB[i]->SetModelMatrix(mAster);
+		m_pMeshMngr->AddAxisToRenderList(mAster);
+		aster->AddToRenderList();
+		asterRB[i]->AddToRenderList();
+	}
 	 //set player ship stuff
 	matrix4 mPlayer = glm::translate(shipPos) * ToMatrix4(qShip) * ToMatrix4(m_qArcBall);//glm::translate(vector3(2.25f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, glm::radians(-55.0f), AXIS_Z);
 	pShip->SetModelMatrix(mPlayer);
@@ -93,4 +110,11 @@ void Application::Release(void)
 	SafeDelete(m_pMesh);
 	SafeDelete(m_pGuideCube);
 	SafeDelete(pShip);
+}
+void Application::InitAster(Model *aster, uint index)
+{
+	for (uint i = 0; i < index; i++)
+	{
+		
+	}
 }
