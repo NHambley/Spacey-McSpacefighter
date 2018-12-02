@@ -66,6 +66,19 @@ void Application::Update(void)
 
 	pShip->AddToRenderList();
 	playerRB->AddToRenderList();
+
+	bool bColliding = false;
+	uint i = 0;
+	while (!bColliding&&i<50)
+	{
+		bColliding = playerRB->IsColliding(asterRB[i]);
+		i++;
+	}
+	m_pMeshMngr->Print("\nColliding: ");
+	if (bColliding)
+		m_pMeshMngr->PrintLine("YES!", C_RED);
+	else
+		m_pMeshMngr->PrintLine("no", C_YELLOW);
 	
 #pragma endregion
 }
@@ -110,6 +123,7 @@ void Application::Release(void)
 	SafeDelete(m_pMesh);
 	SafeDelete(m_pGuideCube);
 	SafeDelete(pShip);
+	SafeDelete(aster);
 }
 void Application::InitAster(Model *aster, uint index)
 {
