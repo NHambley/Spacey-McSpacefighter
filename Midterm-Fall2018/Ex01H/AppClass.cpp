@@ -12,7 +12,8 @@ void Application::InitVariables(void)
 	
 	// IGNORE THESE TWO THINGS IF WE GET RID OF THEM THEY THROW AN EXCEPTION
 	m_pGuideCube = new MyMesh();
-	//m_pGuideCube->GenerateCube(10.0f, C_WHITE);
+	m_pGuideCube->GenerateCube(10.0f, C_WHITE);
+
 	m_pMesh = new MyMesh();
 	//m_pMesh->GenerateCone(1.0f, 2.0f, 8, vector3(0.0f, 0.0f, 0.0f));
 	pShip = new Model();
