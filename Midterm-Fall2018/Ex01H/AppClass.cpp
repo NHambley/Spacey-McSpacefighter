@@ -8,7 +8,7 @@ void Application::InitVariables(void)
 		the guide cube and the tip of the pencil so all solutions on the exam 
 		look the same to the grader
 	*/
-	m_pCameraMngr->SetPositionTargetAndUpward(AXIS_Z * 35.0f, ZERO_V3, AXIS_Y);
+	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(AXIS_Z * 35.0f, ZERO_V3, AXIS_Y);
 	
 	// IGNORE THESE TWO THINGS IF WE GET RID OF THEM THEY THROW AN EXCEPTION
 	m_pGuideCube = new MyMesh();
@@ -74,6 +74,19 @@ void Application::Update(void)
 
 	pShip->AddToRenderList();
 	playerRB->AddToRenderList();
+
+	bool bColliding = false;
+	uint i = 0;
+	while (!bColliding&&i<50)
+	{
+		bColliding = playerRB->IsColliding(asterRB[i]);
+		i++;
+	}
+	m_pMeshMngr->Print("\nColliding: ");
+	if (bColliding)
+		m_pMeshMngr->PrintLine("YES!", C_RED);
+	else
+		m_pMeshMngr->PrintLine("no", C_YELLOW);
 	
 #pragma endregion
 }
@@ -118,6 +131,7 @@ void Application::Release(void)
 	SafeDelete(m_pMesh);
 	SafeDelete(m_pGuideCube);
 	SafeDelete(pShip);
+	SafeDelete(aster);
 }
 void Application::InitAster(Model *aster, uint index)
 {
