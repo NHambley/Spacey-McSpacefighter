@@ -8,7 +8,7 @@ void Application::InitVariables(void)
 		the guide cube and the tip of the pencil so all solutions on the exam 
 		look the same to the grader
 	*/
-	m_pCameraMngr->SetPositionTargetAndUpward(AXIS_Z * 35.0f, ZERO_V3, AXIS_Y);
+	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(AXIS_Z * 35.0f, ZERO_V3, AXIS_Y);
 	
 	// IGNORE THESE TWO THINGS IF WE GET RID OF THEM THEY THROW AN EXCEPTION
 	m_pGuideCube = new MyMesh();
