@@ -19,6 +19,7 @@ void Application::ProcessMousePressed(sf::Event a_event)
 	default: break;
 	case sf::Mouse::Button::Left:
 		gui.m_bMousePressed[0] = true;
+		FireLazer();
 		break;
 	case sf::Mouse::Button::Middle:
 		gui.m_bMousePressed[1] = true;
@@ -53,6 +54,14 @@ void Application::ProcessMouseReleased(sf::Event a_event)
 
 	for (int i = 0; i < 3; i++)
 		gui.io.MouseDown[i] = gui.m_bMousePressed[i];
+}
+
+void Application::FireLazer()
+{
+	lazer = new Model();
+	lazer->Load("Sorted\\Lego.obj");
+	lazerRB.push_back(new MyRigidBody(lazer->GetVertexList()));
+	lazerPos.push_back(m_pCameraMngr->GetPosition());
 }
 void Application::ProcessMouseScroll(sf::Event a_event)
 {
@@ -345,8 +354,7 @@ void Application::ArcBall(float a_fSensitivity)
 }
 void Application::CameraRotation(float a_fSpeed)
 {
-	if (m_bFPC == false)
-		return;
+	
 
 	UINT	MouseX, MouseY;		// Coordinates for the mouse
 	UINT	CenterX, CenterY;	// Coordinates for the center of the screen.

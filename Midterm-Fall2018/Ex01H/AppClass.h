@@ -29,11 +29,17 @@ class Application
 	quaternion qShip; // the quaternion for the player's ship
 	MyRigidBody* playerRB = nullptr;
 
-	std::vector<vector3> asteroidPos; // positino of the player's ship
-	Model* aster = nullptr;// the player's ship model
-	quaternion qAster; // the quaternion for the player's ship
+	std::vector<vector3> asteroidPos; // positino of the asteroids in the scene
+	Model* aster = nullptr;// the asteroid model
+	quaternion qAster; // the quaternion for the asteroids ship
 	std::vector<MyRigidBody*> asterRB;
-	
+
+	std::vector<vector3> lazerPos;
+	Model* lazer = nullptr;// model for the lazers fired by the player
+	quaternion qLazer;
+	std::vector<MyRigidBody*> lazerRB;
+
+	float fireTimer; 
 
 private:
 	static ImGuiObject gui; //GUI object
@@ -246,6 +252,7 @@ private:
 	OUTPUT: ---
 	*/
 	void ProcessMouseReleased(sf::Event a_event);
+	void FireLazer();
 	/*
 	USAGE: Manage the response of mouse scrolling
 	ARGUMENTS: ---
