@@ -12,12 +12,15 @@ Date: 2017/06
 
 #include "MyMesh.h"
 #include "MyRigidBody.h"
+#include "MyMeshManager.h"
 
 namespace Simplex
 {
 	//Adding Application to the Simplex namespace
 class Application
 {
+	MyMeshManager* meshManager = nullptr;
+
 	float m_fTimeBetweenStops = 2.0f; //time that takes to go from one stop to the next
 	MyMesh* m_pGuideCube = nullptr; //Cube to Navigate
 	MyMesh* m_pMesh = nullptr; //Mesh to generate
@@ -28,6 +31,7 @@ class Application
 	Model* pShip = nullptr;// the player's ship model
 	quaternion qShip; // the quaternion for the player's ship
 	MyRigidBody* playerRB = nullptr;
+	MyCamera* camera = nullptr;
 
 	std::vector<vector3> asteroidPos; // positino of the asteroids in the scene
 	Model* aster = nullptr;// the asteroid model
@@ -73,6 +77,9 @@ private:
 	sf::Sound m_sound; //sound effect
 	sf::Music m_soundBGM; //background music
 
+	float xCam;
+	float yCam;
+	float zCam;
 
 public:
 #pragma region Constructor / Run / Destructor
@@ -116,6 +123,8 @@ public:
 	OUTPUT: ---
 	*/
 	~Application(void);
+
+
 #pragma endregion
 
 private:

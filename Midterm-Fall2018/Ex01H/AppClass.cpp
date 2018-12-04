@@ -10,6 +10,8 @@ void Application::InitVariables(void)
 	*/
 	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(AXIS_Z * 35.0f, ZERO_V3, AXIS_Y);
 	
+
+
 	// IGNORE THESE TWO THINGS IF WE GET RID OF THEM THEY THROW AN EXCEPTION
 	m_pGuideCube = new MyMesh();
 	m_pGuideCube->GenerateCube(10.0f, C_WHITE);
@@ -22,7 +24,15 @@ void Application::InitVariables(void)
 	pShip = new Model();
 	pShip->Load("Minecraft\\Steve.obj");
 	playerRB = new MyRigidBody(pShip->GetVertexList());
+
+	//camera = new MyCamera();
 	
+
+	xCam = 0.0f;
+	yCam = 3.0f;
+	zCam = 20.0f;
+	//meshManager->SetCamera(camera);
+
 #pragma endregion
 
 	//Please change to your name and email
@@ -43,8 +53,8 @@ void Application::Update(void)
 	// Is the first person camera active?
 	CameraRotation();
 	shipPos = m_pCameraMngr->GetPosition();
-	shipPos.z -= 0.5f;
-	shipPos.y -=1;
+	shipPos.z -= 1;
+	shipPos.y -= 1;
 
 	//track movement of asteroids **still needs octree
 	for (uint i = 0; i < 50; i++)
@@ -67,7 +77,7 @@ void Application::Update(void)
 		matrix4 mLazer = glm::translate(lazerPos[i]) * ToMatrix4(qLazer);
 	}
 	 //set player ship stuff
-	matrix4 mPlayer = glm::translate(shipPos) * ToMatrix4(qShip) * ToMatrix4(m_qArcBall) * glm::rotate(m_pCameraMngr->GetProjectionMatrix(), glm::radians(-90.0f), AXIS_X);
+	matrix4 mPlayer = glm::translate(shipPos) * ToMatrix4(qShip) * ToMatrix4(m_qArcBall) * glm::rotate(IDENTITY_M4, glm::radians(-90.0f), AXIS_X);
 	pShip->SetModelMatrix(mPlayer);
 	playerRB->SetModelMatrix(mPlayer);
 	m_pMeshMngr->AddAxisToRenderList(mPlayer);

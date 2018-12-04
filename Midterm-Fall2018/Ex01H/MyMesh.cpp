@@ -160,6 +160,10 @@ void MyMesh::AddTri(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vTo
 	AddVertexPosition(a_vBottomRight);
 	AddVertexPosition(a_vTopLeft);
 }
+void Simplex::MyMesh::Render(MyCamera * a_pCamera, matrix4 a_mModel)
+{
+	Render(a_pCamera->GetProjectionMatrix(), a_pCamera->GetViewMatrix(), a_mModel);
+}
 void MyMesh::AddQuad(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vTopLeft, vector3 a_vTopRight)
 {
 	//C--D

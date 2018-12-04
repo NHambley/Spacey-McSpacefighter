@@ -15,7 +15,6 @@ namespace Simplex
 		vector3 m_v3Position = vector3(0.0f, 0.0f, 10.0f); //Where my camera is located
 		vector3 m_v3Target = vector3(0.0f, 0.0f, 0.0f); //What I'm looking at
 		vector3 m_v3Above = vector3(0.0f, 1.0f, 0.0f); //What is above the camera
-		vector3 forwardVec = glm::normalize(m_v3Target - m_v3Position);// what is forward to the camera
 		vector3 upwardVec = glm::normalize(m_v3Above - m_v3Position);// what is above the camera
 		vector3 rightwardVec = glm::normalize(glm::cross(forwardVec, upwardVec));// a right vecotr from the camera
 
@@ -32,6 +31,8 @@ namespace Simplex
 		matrix4 m_m4View; //View matrix
 		matrix4 m_m4Projection; //Projection Matrix
 	public:
+		vector3 forwardVec = glm::normalize(m_v3Target - m_v3Position);// what is forward to the camera
+
 		/*
 		USAGE: Constructor
 		ARGUMENTS: ---

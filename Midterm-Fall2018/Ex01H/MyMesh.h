@@ -6,6 +6,7 @@ Date: 2017/05
 #define __MYMESH_H_
 
 #include "Definitions.h"
+#include "MyCamera.h"
 namespace Simplex
 {
 class MyMesh
@@ -116,6 +117,9 @@ public:
 	OUTPUT: ---
 	*/
 	void AddTri(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vTopLeft);
+
+	void Render(MyCamera* a_pCamera, matrix4 a_mModel);
+
 	/*
 	USAGE: Adds a quad to the list points in the buffer to be compiled
 	//C--D
