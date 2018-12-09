@@ -1,3 +1,7 @@
+/*----------------------------------------------
+Programmer: Alberto Bobadilla (labigm@gmail.com)
+Date: 2017/07
+----------------------------------------------*/
 #ifndef __MYENTITYMANAGER_H_
 #define __MYENTITYMANAGER_H_
 

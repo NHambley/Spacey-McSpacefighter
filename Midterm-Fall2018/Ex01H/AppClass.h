@@ -14,12 +14,21 @@ Date: 2017/06
 #include "MyRigidBody.h"
 #include "MyMeshManager.h"
 #include "LazerManager.h"
+#include "MyOctant.h"
+
 namespace Simplex
 {
 	//Adding Application to the Simplex namespace
 class Application
 {
 	MyMeshManager* meshManager = nullptr;
+	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager
+
+	bool display = true;
+	MyOctant* m_pRoot = nullptr; //Root of the Octree
+	uint m_uOctantID = -1; //Index of Octant to display
+	uint m_uObjects = 0; //Number of objects in the scene
+	uint m_uOctantLevels = 0; //Number of levels in the octree
 
 	float m_fTimeBetweenStops = 2.0f; //time that takes to go from one stop to the next
 	MyMesh* m_pGuideCube = nullptr; //Cube to Navigate
@@ -37,6 +46,7 @@ class Application
 	Model* aster = nullptr;// the asteroid model
 	quaternion qAster; // the quaternion for the asteroids ship
 	std::vector<MyRigidBody*> asterRB;
+	std::vector<uint> directions;
 
 	std::vector<vector3> lazerPos;
 	std::vector<vector3> moveLazer;

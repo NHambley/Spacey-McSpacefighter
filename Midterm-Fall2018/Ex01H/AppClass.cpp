@@ -2,6 +2,7 @@
 using namespace Simplex;
 void Application::InitVariables(void)
 {
+	m_pEntityMngr = MyEntityManager::GetInstance();
 #pragma region DOES NOT NEED CHANGES
 	/*
 		This part initialize the camera position so I can see the scene better; 
@@ -22,8 +23,16 @@ void Application::InitVariables(void)
 
 	m_pMesh = new MyMesh();
 	//m_pMesh->GenerateCone(1.0f, 2.0f, 8, vector3(0.0f, 0.0f, 0.0f));
+	for (uint i = 0; i < 10; i++)
+	{
+		m_pEntityMngr->AddEntity("Minecraft\\Cube.obj");
 
-	InitAster(aster, 50);
+		asteroidPos.push_back(vector3(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 - 50));
+		directions.push_back(rand() % 6 + 1);
+		aster = new Model();
+		aster->Load("Minecraft\\Cube.obj");
+		asterRB.push_back(new MyRigidBody(aster->GetVertexList()));
+	}
 	
 	pShip = new Model();
 	pShip->Load("Minecraft\\Steve.obj");
@@ -39,6 +48,10 @@ void Application::InitVariables(void)
 	//meshManager->SetCamera(camera);
 
 #pragma endregion
+	m_uOctantLevels = 1;
+	m_pRoot = new MyOctant(m_uOctantLevels, 5);
+	m_pEntityMngr->Update();
+	m_pRoot->IsColliding();
 
 	//Please change to your name and email
 	m_sProgramer = "Nathan Hambley - nhambley6@gmail.com\nConor Lilley - conorqlilley@gmail.com\nFrederick DiTondo - fredsemail@gmail.com";
@@ -62,19 +75,43 @@ void Application::Update(void)
 	shipPos.y -= 1;
 
 	//track movement of asteroids **still needs octree
-	for (uint i = 0; i < 50; i++)
+	for (uint i = 0; i < 10; i++)
 	{
-		aster = new Model();
-		aster->Load("Minecraft\\Cube.obj");
-		asterRB.push_back(new MyRigidBody(aster->GetVertexList()));
-		asteroidPos.push_back(vector3(rand() % 100-50, rand() % 100-50, rand() % 100-50));
-		matrix4 mAster = glm::translate(asteroidPos[i]) * ToMatrix4(qAster);//glm::translate(vector3(2.25f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, glm::radians(-55.0f), AXIS_Z);
-		aster->SetModelMatrix(mAster);
-		asterRB[i]->SetModelMatrix(mAster);
-		m_pMeshMngr->AddAxisToRenderList(mAster);
-		aster->AddToRenderList();
-		asterRB[i]->AddToRenderList();
+		if (directions[i] == 1)
+		{
+			asteroidPos[i].x -= .01;
+		}
+		else if (directions[i] == 2)
+		{
+			asteroidPos[i].x += .01;
+		}
+		else if (directions[i] == 3)
+		{
+			asteroidPos[i].z -= .01;
+		}
+		else if (directions[i] == 4)
+		{
+			asteroidPos[i].z += .01;
+		}
+		else if (directions[i] == 5)
+		{
+			asteroidPos[i].y -= .01;
+		}
+		else if (directions[i] == 6)
+		{
+			asteroidPos[i].y += .01;
+		}
+		matrix4 m4Pos = glm::translate(asteroidPos[i]);
+		asterRB[i]->SetModelMatrix(m4Pos);
+		m_pEntityMngr->SetModelMatrix(m4Pos);
+
+		//Update Entity Manager
+		m_pEntityMngr->Update();
+
+		//Add objects to render list
+		m_pEntityMngr->AddEntityToRenderList(-1, true);
 	}
+
 
 	// move any lazers if there are any in the scene
 	for (uint i = 0; i < lazerPos.size(); i++)
@@ -99,7 +136,7 @@ void Application::Update(void)
 
 	bool bColliding = false;
 	uint i = 0;
-	while (!bColliding&&i<50)
+	while (!bColliding&&i<10)
 	{
 		bColliding = playerRB->IsColliding(asterRB[i]);
 		i++;
@@ -116,6 +153,11 @@ void Application::Display(void)
 {
 	// Clear the screen
 	ClearScreen();
+
+	if (display)
+	{
+		m_pRoot->Display();
+	}
 
 	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
 	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
@@ -154,11 +196,4 @@ void Application::Release(void)
 	SafeDelete(m_pGuideCube);
 	SafeDelete(pShip);
 	SafeDelete(aster);
-}
-void Application::InitAster(Model *aster, uint index)
-{
-	for (uint i = 0; i < index; i++)
-	{
-		
-	}
 }

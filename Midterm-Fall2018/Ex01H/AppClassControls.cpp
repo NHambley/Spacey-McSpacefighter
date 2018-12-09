@@ -148,6 +148,24 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 	case sf::Keyboard::LShift:
 	case sf::Keyboard::RShift:
 		m_bModifier = false;
+
+	case sf::Keyboard::PageUp:
+		++m_uOctantID;
+		display = true;
+		/*
+		if (m_uOctantID >= m_pRoot->GetOctantCount())
+			m_uOctantID = - 1;
+		*/
+		break;
+	case sf::Keyboard::PageDown:
+		--m_uOctantID;
+		display = false;
+		/*
+		if (m_uOctantID >= m_pRoot->GetOctantCount())
+			m_uOctantID = - 1;
+		*/
+		break;
+
 	}
 
 	//gui
