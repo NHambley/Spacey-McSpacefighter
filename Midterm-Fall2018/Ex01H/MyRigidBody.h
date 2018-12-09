@@ -24,6 +24,9 @@ namespace Simplex
 		vector3 m_v3ColorColliding = C_RED; //Color when colliding
 		vector3 m_v3ColorNotColliding = C_WHITE; //Color when not colliding
 
+		vector3 m_v3CenterL = ZERO_V3; //center point in local space
+		vector3 m_v3CenterG = ZERO_V3; //center point in global space
+
 		vector3 m_v3Center = ZERO_V3; //center point in local space
 		vector3 m_v3MinL = ZERO_V3; //minimum coordinate in local space (for OBB)
 		vector3 m_v3MaxL = ZERO_V3; //maximum coordinate in local space (for OBB)
@@ -40,6 +43,7 @@ namespace Simplex
 		std::set<MyRigidBody*> m_CollidingRBSet; //set of rigid bodies this one is colliding with
 
 	public:
+		void MakeCubic(void);
 		/*
 		Usage: Constructor
 		Arguments: std::vector<vector3> a_pointList -> list of points to make the Rigid Body for
