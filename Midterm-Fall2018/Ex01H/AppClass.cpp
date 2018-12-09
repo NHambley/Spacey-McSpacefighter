@@ -8,9 +8,13 @@ void Application::InitVariables(void)
 		the guide cube and the tip of the pencil so all solutions on the exam 
 		look the same to the grader
 	*/
-	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(AXIS_Z * 35.0f, ZERO_V3, AXIS_Y);
+	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(AXIS_Z * 35.0f,
+		ZERO_V3, 
+		AXIS_Y);
 	
-
+	position = vector3(0.0f, 3.0f, 20.0f);
+	target = vector3(0.0f, 3.0f, 19.0f);
+	forward = glm::normalize(target - position);
 
 	// IGNORE THESE TWO THINGS IF WE GET RID OF THEM THEY THROW AN EXCEPTION
 	m_pGuideCube = new MyMesh();
@@ -26,7 +30,8 @@ void Application::InitVariables(void)
 	playerRB = new MyRigidBody(pShip->GetVertexList());
 
 	//camera = new MyCamera();
-	
+	lazer = new Model();
+	lazer->Load("Minecraft\\Steve.obj");
 
 	xCam = 0.0f;
 	yCam = 3.0f;
@@ -71,11 +76,18 @@ void Application::Update(void)
 		asterRB[i]->AddToRenderList();
 	}
 
-	// move any lazers that are in the scene
-	for (uint i = 0; i < lazerRB.size(); i++)
+	// move any lazers if there are any in the scene
+	for (uint i = 0; i < lazerPos.size(); i++)
 	{
-		matrix4 mLazer = glm::translate(lazerPos[i]) * ToMatrix4(qLazer);
+		lazerPos[i] += moveLazer[i];
+		matrix4 m4Lazer = glm::translate(lazerPos[i]) * ToMatrix4(qLazer);
+		lazer->SetModelMatrix(m4Lazer);
+		lazerRB[i]->SetModelMatrix(m4Lazer);
+		m_pMeshMngr->AddAxisToRenderList(m4Lazer);
+		lazer->AddToRenderList();
+		lazerRB[i]->AddToRenderList();
 	}
+	
 	 //set player ship stuff
 	matrix4 mPlayer = glm::translate(shipPos) * ToMatrix4(qShip) * ToMatrix4(m_qArcBall) * glm::rotate(IDENTITY_M4, glm::radians(-90.0f), AXIS_X);
 	pShip->SetModelMatrix(mPlayer);

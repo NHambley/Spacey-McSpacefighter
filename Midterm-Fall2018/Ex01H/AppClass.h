@@ -13,7 +13,7 @@ Date: 2017/06
 #include "MyMesh.h"
 #include "MyRigidBody.h"
 #include "MyMeshManager.h"
-
+#include "LazerManager.h"
 namespace Simplex
 {
 	//Adding Application to the Simplex namespace
@@ -39,9 +39,11 @@ class Application
 	std::vector<MyRigidBody*> asterRB;
 
 	std::vector<vector3> lazerPos;
-	Model* lazer = nullptr;// model for the lazers fired by the player
-	quaternion qLazer;
+	std::vector<vector3> moveLazer;
 	std::vector<MyRigidBody*> lazerRB;
+	Model* lazer = nullptr;
+	quaternion qLazer;
+	
 
 	float fireTimer; 
 
@@ -81,6 +83,9 @@ private:
 	float yCam;
 	float zCam;
 
+	vector3 position = vector3(0.0f, 0.0f, 10.0f);
+	vector3 target = vector3(0.0f, 0.0f, 0.0f);
+	vector3 forward = glm::normalize(target - position);
 public:
 #pragma region Constructor / Run / Destructor
 	/*

@@ -58,10 +58,9 @@ void Application::ProcessMouseReleased(sf::Event a_event)
 
 void Application::FireLazer()
 {
-	lazer = new Model();
-	lazer->Load("Sorted\\Lego.obj");
 	lazerRB.push_back(new MyRigidBody(lazer->GetVertexList()));
 	lazerPos.push_back(m_pCameraMngr->GetPosition());
+	moveLazer.push_back(target - m_pCameraMngr->GetPosition());
 }
 void Application::ProcessMouseScroll(sf::Event a_event)
 {
@@ -378,26 +377,31 @@ void Application::CameraRotation(float a_fSpeed)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
 		fAngleY += fDeltaMouse * a_fSpeed;
+		target = glm::rotate(target, fAngleY, vector3(0.0f, 1.0f, 0.0f));
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
 		fAngleY -= fDeltaMouse * a_fSpeed;
+		target = glm::rotate(target, fAngleY, vector3(0.0f, 1.0f, 0.0f));
 	}
 
 	if (MouseY < CenterY)
 	{
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
 		fAngleX -= fDeltaMouse * a_fSpeed;
+		target = glm::rotate(target, fAngleX, vector3(1.0f, 0.0f, 0.0f));
 	}
 	else if (MouseY > CenterY)
 	{
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
+		target = glm::rotate(target, fAngleY, vector3(1.0f, 0.0f, 0.0f));
 	}
 	//Change the Yaw and the Pitch of the camera
 	m_pCameraMngr->ChangeYaw(fAngleY * 0.25f);
 	m_pCameraMngr->ChangePitch(-fAngleX * 0.25f);
+	forward = glm::normalize(target - position);
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -421,11 +425,15 @@ void Application::ProcessKeyboard(void)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		m_pCameraMngr->MoveForward(m_fMovementSpeed * fMultiplier);
+		position += (m_fMovementSpeed * fMultiplier) * forward;
+		target += (m_fMovementSpeed * fMultiplier) * forward;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
 		m_pCameraMngr->MoveForward(-m_fMovementSpeed * fMultiplier);
+		position += (-m_fMovementSpeed * fMultiplier) * forward;
+		target += (m_fMovementSpeed * fMultiplier) * forward;
 	}
 	
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
