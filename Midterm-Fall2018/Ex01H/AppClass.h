@@ -35,8 +35,14 @@ class Application
 	MyMesh* m_pMesh = nullptr; //Mesh to generate
 	String m_sProgramer = "Team 133"; //Name of programmer
 
+
 	// player things
-	vector3 shipPos; // positino of the player's ship
+	vector3 shipPos = vector3(0.0f, 0.0f, 0.0f); // positino of the player's ship
+	vector3 shipTar = vector3(0.0f, 0.0f, 0.0f);
+	vector3 shipAbove = vector3(0.0f, 1.0f, 0.0f);
+	vector3 shipFor = glm::normalize(shipTar - shipPos); // ships forward vector
+	vector3 shipUp = glm::normalize(shipAbove - shipPos); // ships upward vector
+	vector3 shipRight = glm::normalize(glm::cross(shipFor, shipUp)); // ships rightward vector
 	Model* pShip = nullptr;// the player's ship model
 	quaternion qShip; // the quaternion for the player's ship
 	MyRigidBody* playerRB = nullptr;
@@ -93,9 +99,7 @@ private:
 	float yCam;
 	float zCam;
 
-	vector3 position = vector3(0.0f, 0.0f, 10.0f);
-	vector3 target = vector3(0.0f, 0.0f, 0.0f);
-	vector3 forward = glm::normalize(target - position);
+
 public:
 #pragma region Constructor / Run / Destructor
 	/*

@@ -13,9 +13,11 @@ void Application::InitVariables(void)
 		ZERO_V3, 
 		AXIS_Y);
 	
-	position = vector3(0.0f, 3.0f, 20.0f);
-	target = vector3(0.0f, 3.0f, 19.0f);
-	forward = glm::normalize(target - position);
+	shipPos = vector3(0.0f, 3.0f, 20.0f);
+	shipTar = vector3(0.0f, 3.0f, 19.0f);
+	shipFor = glm::normalize(shipTar - shipPos);
+	shipUp = glm::normalize(shipAbove - shipPos);
+	shipRight = glm::normalize(glm::cross(shipFor, shipUp));
 
 	// IGNORE THESE TWO THINGS IF WE GET RID OF THEM THEY THROW AN EXCEPTION
 	m_pGuideCube = new MyMesh();
@@ -70,16 +72,13 @@ void Application::Update(void)
 
 	// Is the first person camera active?
 	CameraRotation();
-	shipPos = m_pCameraMngr->GetPosition();
-	shipPos.z -= 1;
-	shipPos.y -= 1;
 
 	//track movement of asteroids **still needs octree
 	for (uint i = 0; i < 10; i++)
 	{
 		if (directions[i] == 1)
 		{
-			asteroidPos[i].x -= .01;
+			asteroidPos[i].x -= .01; 
 		}
 		else if (directions[i] == 2)
 		{
