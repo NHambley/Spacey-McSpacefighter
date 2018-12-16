@@ -5,7 +5,7 @@ Date: 2017/06
 #ifndef __MYRIGIDBODY_H_
 #define __MYRIGIDBODY_H_
 
-#include "Simplex\Simplex.h"
+#include "Simplex\Mesh\Model.h"
 
 namespace Simplex
 {
@@ -13,6 +13,7 @@ namespace Simplex
 	//System Class
 	class MyRigidBody
 	{
+		typedef MyRigidBody* PRigidBody; //Entity Pointer
 		MeshManager* m_pMeshMngr = nullptr; //for displaying the Rigid Body
 
 		bool m_bVisibleBS = false; //Visibility of bounding sphere
@@ -27,7 +28,6 @@ namespace Simplex
 		vector3 m_v3CenterL = ZERO_V3; //center point in local space
 		vector3 m_v3CenterG = ZERO_V3; //center point in global space
 
-		vector3 m_v3Center = ZERO_V3; //center point in local space
 		vector3 m_v3MinL = ZERO_V3; //minimum coordinate in local space (for OBB)
 		vector3 m_v3MaxL = ZERO_V3; //maximum coordinate in local space (for OBB)
 
@@ -37,13 +37,12 @@ namespace Simplex
 		vector3 m_v3HalfWidth = ZERO_V3; //half the size of the Oriented Bounding Box
 		vector3 m_v3ARBBSize = ZERO_V3;// size of the Axis (Re)Alligned Bounding Box
 
-		vector3 v3Corner[8];
 		matrix4 m_m4ToWorld = IDENTITY_M4; //Matrix that will take us from local to world coordinate
 
-		std::set<MyRigidBody*> m_CollidingRBSet; //set of rigid bodies this one is colliding with
+		uint m_nCollidingCount = 0; //size of the colliding set
+		PRigidBody* m_CollidingArray = nullptr; //array of rigid bodies this one is colliding with
 
 	public:
-		void MakeCubic(void);
 		/*
 		Usage: Constructor
 		Arguments: std::vector<vector3> a_pointList -> list of points to make the Rigid Body for
@@ -94,21 +93,21 @@ namespace Simplex
 		ARGUMENTS: MyRigidBody* other -> inspected rigid body
 		OUTPUT: ---
 		*/
-		void AddCollisionWith(MyRigidBody* a_pOther);
+		void AddCollisionWith(MyRigidBody* other);
 
 		/*
 		USAGE: Remove marked collision with the incoming Rigid Body
 		ARGUMENTS: MyRigidBody* other -> inspected rigid body
 		OUTPUT: ---
 		*/
-		void RemoveCollisionWith(MyRigidBody* a_pOther);
+		void RemoveCollisionWith(MyRigidBody* other);
 
 		/*
 		USAGE: Tells if the object is colliding with the incoming one
 		ARGUMENTS: MyRigidBody* const other -> inspected rigid body
 		OUTPUT: are they colliding?
 		*/
-		bool IsColliding(MyRigidBody* const a_pOther);
+		bool IsColliding(MyRigidBody* const other);
 #pragma region Accessors
 		/*
 		Usage: Gets visibility of bounding sphere
@@ -201,7 +200,7 @@ namespace Simplex
 		*/
 		vector3 GetCenterGlobal(void);
 		/*
-		Usage: Gets minimum vector in local space
+		Usage: Gets minimum vector in global space
 		Arguments: ---
 		Output: min vector
 		*/
@@ -231,6 +230,12 @@ namespace Simplex
 		*/
 		void SetModelMatrix(matrix4 a_m4ModelMatrix);
 #pragma endregion
+		/*
+		USAGE: Checks if the input is in the colliding array
+		ARGUMENTS: MyRigidBody* a_pEntry -> Entry queried
+		OUTPUT: is it in the array?
+		*/
+		bool IsInCollidingArray(MyRigidBody* a_pEntry);
 
 	private:
 		/*
@@ -246,10 +251,9 @@ namespace Simplex
 		*/
 		void Init(void);
 		/*
-		USAGE: This will try to find a Separation Axis, will return 0 if
-			none found (there is a collision)
+		USAGE: This will apply the Separation Axis Test
 		ARGUMENTS: MyRigidBody* const a_pOther -> other rigid body to test against
-		OUTPUT: 0 for colliding, other = first axis that succeeds test
+		OUTPUT: 0 for colliding, all other first axis that succeeds test
 		*/
 		uint SAT(MyRigidBody* const a_pOther);
 	};//class
@@ -263,5 +267,3 @@ USAGE:
 ARGUMENTS: ---
 OUTPUT: ---
 */
-
-

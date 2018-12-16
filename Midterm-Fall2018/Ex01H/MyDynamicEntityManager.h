@@ -2,28 +2,29 @@
 Programmer: Alberto Bobadilla (labigm@gmail.com)
 Date: 2017/07
 ----------------------------------------------*/
-#ifndef __MYENTITYMANAGER_H_
-#define __MYENTITYMANAGER_H_
+#ifndef __MyDynamicEntityManager_H_
+#define __MyDynamicEntityManager_H_
 
-#include "MyEntity.h"
+#include "MyDynamicEntity.h"
 
 namespace Simplex
 {
 
 	//System Class
-	class MyEntityManager
+	class MyDynamicEntityManager
 	{
-		typedef MyEntity* PEntity; //MyEntity Pointer
+		typedef MyDynamicEntity* PEntity; //MyDynamicEntity Pointer
 		uint m_uEntityCount = 0; //number of elements in the list
-		PEntity* m_mEntityArray = nullptr; //array of MyEntity pointers
-		static MyEntityManager* m_pInstance; // Singleton pointer
+		PEntity* m_mEntityArray = nullptr; //array of MyDynamicEntity pointers
+		static MyDynamicEntityManager* m_pInstance; // Singleton pointer
+		uint score = 0;
 	public:
 		/*
 		Usage: Gets the singleton pointer
 		Arguments: ---
 		Output: singleton pointer
 		*/
-		static MyEntityManager* GetInstance();
+		static MyDynamicEntityManager* GetInstance();
 		/*
 		Usage: Releases the content of the singleton
 		Arguments: ---
@@ -43,9 +44,9 @@ namespace Simplex
 		-	String a_sUniqueID -> Name wanted as identifier, if not available will generate one
 		OUTPUT: ---
 		*/
-		void AddEntity(String a_sFileName, String a_sUniqueID = "NA");
+		void Simplex::MyDynamicEntityManager::AddEntity(vector3 a_v3Velocity, vector3 a_v3Position, quaternion a_qRotation, String a_sFileName, String a_sUniqueID = "NA");
 		/*
-		USAGE: Deletes the MyEntity Specified by unique ID and removes it from the list
+		USAGE: Deletes the MyDynamicEntity Specified by unique ID and removes it from the list
 		ARGUMENTS: uint a_uIndex -> index of the queried entry, if < 0 asks for the last one added
 		OUTPUT: ---
 		*/
@@ -246,31 +247,33 @@ namespace Simplex
 		OUTPUT: MyEntity count
 		*/
 		uint GetEntityCount(void);
+		uint GetScore();
+		void SetScore(uint s);
 	private:
 		/*
 		Usage: constructor
 		Arguments: ---
 		Output: class object instance
 		*/
-		MyEntityManager(void);
+		MyDynamicEntityManager(void);
 		/*
 		Usage: copy constructor
 		Arguments: class object to copy
 		Output: class object instance
 		*/
-		MyEntityManager(MyEntityManager const& a_pOther);
+		MyDynamicEntityManager(MyDynamicEntityManager const& a_pOther);
 		/*
 		Usage: copy assignment operator
 		Arguments: class object to copy
 		Output: ---
 		*/
-		MyEntityManager& operator=(MyEntityManager const& a_pOther);
+		MyDynamicEntityManager& operator=(MyDynamicEntityManager const& a_pOther);
 		/*
 		Usage: destructor
 		Arguments: ---
 		Output: ---
 		*/
-		~MyEntityManager(void);
+		~MyDynamicEntityManager(void);
 		/*
 		Usage: releases the allocated member pointers
 		Arguments: ---
@@ -287,7 +290,7 @@ namespace Simplex
 
 } //namespace Simplex
 
-#endif //__MYENTITYMANAGER_H_
+#endif //__MyDynamicEntityManager_H_
 
 /*
 USAGE:

@@ -4,7 +4,7 @@ ControllerInput& ControllerInput::operator=(ControllerInput const& input) { retu
 ControllerInput::ControllerInput(unsigned int nVendorID, unsigned int nProductID)
 {
 	uModel = SimplexController_NONE;
-	
+
 	for (unsigned int i = 0; i < 15; ++i)
 	{
 		button[i] = false;
@@ -65,7 +65,7 @@ ControllerInput::ControllerInput(unsigned int nVendorID, unsigned int nProductID
 			uModel = SimplexController_360;
 		}
 
-		break;		
+		break;
 
 	case SONY: //Sony
 		//PS4
@@ -90,10 +90,10 @@ ControllerInput::ControllerInput(unsigned int nVendorID, unsigned int nProductID
 			mapButton[SimplexKey_R2] = SimplexKey_R2;
 			mapButton[SimplexKey_Select] = SimplexKey_L3;
 			mapButton[SimplexKey_Start] = SimplexKey_R3;
-			
+
 			mapButton[SimplexKey_L3] = SimplexKey_Select;
 			mapButton[SimplexKey_R3] = SimplexKey_Start;
-			
+
 			mapButton[SimplexKey_G0] = SimplexKey_Pad;
 			mapButton[SimplexKey_Pad] = SimplexKey_G0;
 
@@ -123,7 +123,7 @@ ControllerInput::ControllerInput(unsigned int nVendorID, unsigned int nProductID
 
 			mapButton[SimplexKey_L3] = SimplexKey_Select;
 			mapButton[SimplexKey_R3] = SimplexKey_Start;
-			
+
 			mapButton[SimplexKey_Pad] = SimplexKey_Pad;
 			mapButton[SimplexKey_G0] = SimplexKey_G0;
 
@@ -153,7 +153,7 @@ ControllerInput::ControllerInput(unsigned int nVendorID, unsigned int nProductID
 
 			mapButton[SimplexKey_Select] = SimplexKey_Select;
 			mapButton[SimplexKey_Start] = SimplexKey_Start;
-			
+
 			//Does nothing on this pad
 			mapButton[SimplexKey_X] = SimplexKey_Pad;//<----
 			mapButton[SimplexKey_R1] = SimplexKey_Pad;//<-----
@@ -187,7 +187,7 @@ ControllerInput::ControllerInput(unsigned int nVendorID, unsigned int nProductID
 
 			mapButton[SimplexKey_Select] = SimplexKey_Pad;//<----
 			mapButton[SimplexKey_Start] = SimplexKey_Pad;//<----
-						
+
 			mapButton[SimplexKey_Pad] = SimplexKey_Pad;//<----
 			mapButton[SimplexKey_G0] = SimplexKey_Pad;//<-----
 			mapButton[SimplexKey_G1] = SimplexKey_Pad;//<-----			

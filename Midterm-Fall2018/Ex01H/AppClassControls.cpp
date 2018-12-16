@@ -8,7 +8,7 @@ void Application::ProcessMouseMovement(sf::Event a_event)
 	sf::Vector2i window = m_pWindow->getPosition();
 	m_v3Mouse.x = static_cast<float>(mouse.x - window.x);
 	m_v3Mouse.y = static_cast<float>(mouse.y - window.y);
-	if(!m_pSystem->IsWindowFullscreen() && !m_pSystem->IsWindowBorderless())
+	if (!m_pSystem->IsWindowFullscreen() && !m_pSystem->IsWindowBorderless())
 		m_v3Mouse += vector3(-8.0f, -32.0f, 0.0f);
 	gui.io.MousePos = ImVec2(m_v3Mouse.x, m_v3Mouse.y);
 }
@@ -18,9 +18,13 @@ void Application::ProcessMousePressed(sf::Event a_event)
 	{
 	default: break;
 	case sf::Mouse::Button::Left:
-		gui.m_bMousePressed[0] = true;
-		FireLazer();
-		break;
+	{
+		vector3 v3Position = m_pCameraMngr->GetPosition();
+		vector3 v3Velocity = m_pCameraMngr->GetForward() * 3;
+		quaternion qRotation = IDENTITY_QUAT;
+		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Planets\\03A_Moon.obj");
+	}
+	break;
 	case sf::Mouse::Button::Middle:
 		gui.m_bMousePressed[1] = true;
 		m_bArcBall = true;
@@ -55,13 +59,6 @@ void Application::ProcessMouseReleased(sf::Event a_event)
 	for (int i = 0; i < 3; i++)
 		gui.io.MouseDown[i] = gui.m_bMousePressed[i];
 }
-
-void Application::FireLazer()
-{
-	lazerRB.push_back(new MyRigidBody(lazer->GetVertexList()));
-	lazerPos.push_back(shipPos + vector3(0.0f, 0.0f, -2.0f));
-	moveLazer.push_back((m_pCameraMngr->GetPosition() + vector3(0.0f, 0.0f, -1.0f)) - m_pCameraMngr->GetPosition());
-}
 void Application::ProcessMouseScroll(sf::Event a_event)
 {
 	gui.io.MouseWheel = a_event.mouseWheelScroll.delta;
@@ -87,7 +84,7 @@ void Application::ProcessKeyPressed(sf::Event a_event)
 		m_bModifier = true;
 		break;
 	}
-	
+
 	//gui
 	gui.io.KeysDown[a_event.key.code] = true;
 	gui.io.KeyCtrl = a_event.key.control;
@@ -119,53 +116,44 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 		bFPSControl = !bFPSControl;
 		m_pCameraMngr->SetFPS(bFPSControl);
 		break;
-	case sf::Keyboard::Add:
-		++m_uActCont;
-		m_uActCont %= 8;
-		if (m_uControllerCount > 0)
-		{
-			while (m_pController[m_uActCont]->uModel == SimplexController_NONE)
-			{
-				++m_uActCont;
-				m_uActCont %= 8;
-			}
-		}
-		break;
-	case sf::Keyboard::Subtract:
-		--m_uActCont;
-		if (m_uActCont > 7)
-			m_uActCont = 7;
-		if (m_uControllerCount > 0)
-		{
-			while (m_pController[m_uActCont]->uModel == SimplexController_NONE)
-			{
-				--m_uActCont;
-				if (m_uActCont > 7)
-					m_uActCont = 7;
-			}
-		}
-		break;
-	case sf::Keyboard::LShift:
-	case sf::Keyboard::RShift:
-		m_bModifier = false;
-
 	case sf::Keyboard::PageUp:
 		++m_uOctantID;
-		display = true;
-		/*
 		if (m_uOctantID >= m_pRoot->GetOctantCount())
-			m_uOctantID = - 1;
-		*/
+			m_uOctantID = -1;
 		break;
 	case sf::Keyboard::PageDown:
 		--m_uOctantID;
-		display = false;
-		/*
 		if (m_uOctantID >= m_pRoot->GetOctantCount())
-			m_uOctantID = - 1;
-		*/
+			m_uOctantID = -1;
 		break;
-
+	case sf::Keyboard::Add:
+		if (m_uOctantLevels < 4)
+		{
+			m_pEntityMngr->ClearDimensionSetAll();
+			++m_uOctantLevels;
+			SafeDelete(m_pRoot);
+			m_pRoot = new MyOctant(m_uOctantLevels, 5);
+		}
+		break;
+	case sf::Keyboard::Subtract:
+		if (m_uOctantLevels > 0)
+		{
+			m_pEntityMngr->ClearDimensionSetAll();
+			--m_uOctantLevels;
+			SafeDelete(m_pRoot);
+			m_pRoot = new MyOctant(m_uOctantLevels, 5);
+		}
+		break;
+	case sf::Keyboard::R:
+		Restart();
+		break;
+	case sf::Keyboard::Q:
+		octantDisplay = !octantDisplay;
+		break;
+	case sf::Keyboard::E:
+		octantActive = !octantActive;
+		m_bModifier = false;
+		break;
 	}
 
 	//gui
@@ -181,6 +169,7 @@ void Application::ProcessJoystickConnected(uint nController)
 		return;
 
 	bool bConnected = sf::Joystick::isConnected(nController);
+	m_bGUI_Controller = bConnected;
 	if (bConnected)
 	{
 		SafeDelete(m_pController[nController]);
@@ -371,8 +360,8 @@ void Application::ArcBall(float a_fSensitivity)
 }
 void Application::CameraRotation(float a_fSpeed)
 {
-	//if (!m_bFPC)
-		//return;
+	if (m_bFPC == false)
+		return;
 
 	UINT	MouseX, MouseY;		// Coordinates for the mouse
 	UINT	CenterX, CenterY;	// Coordinates for the center of the screen.
@@ -395,35 +384,26 @@ void Application::CameraRotation(float a_fSpeed)
 	{
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
 		fAngleY += fDeltaMouse * a_fSpeed;
-		//shipTar = glm::rotate(shipTar, fAngleY, vector3(0.0f, 1.0f, 0.0f));
-		//m_qArcBall = quaternion(vector3(0.0f, glm::radians(a_fSpeed * fDeltaMouse), 0.0f) * m_qArcBall);
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
 		fAngleY -= fDeltaMouse * a_fSpeed;
-		//shipTar = glm::rotate(shipTar, fAngleY, vector3(0.0f, 1.0f, 0.0f));
-		//m_qArcBall = quaternion(vector3(0.0f, glm::radians(-a_fSpeed * fDeltaMouse), 0.0f) * m_qArcBall);
 	}
 
 	if (MouseY < CenterY)
 	{
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
 		fAngleX -= fDeltaMouse * a_fSpeed;
-		//shipTar = glm::rotate(shipTar, fAngleX, vector3(1.0f, 0.0f, 0.0f));
-		//m_qArcBall = quaternion(vector3(glm::radians(-a_fSpeed * fDeltaMouse), 0.0f, 0.0f) * m_qArcBall);
 	}
 	else if (MouseY > CenterY)
 	{
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
-		//shipTar = glm::rotate(shipTar, fAngleY, vector3(1.0f, 0.0f, 0.0f));
-		//m_qArcBall = quaternion(vector3(glm::radians(a_fSpeed * fDeltaMouse), 0.0f, 0.0f) * m_qArcBall);
 	}
 	//Change the Yaw and the Pitch of the camera
-	//m_pCameraMngr->ChangeYaw(fAngleY * 0.25f);
-	//m_pCameraMngr->ChangePitch(-fAngleX * 0.25f);
-	shipFor = glm::normalize(shipTar - shipPos);
+	m_pCameraMngr->ChangeYaw(fAngleY * 0.25f);
+	m_pCameraMngr->ChangePitch(-fAngleX * 0.25f);
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -439,61 +419,41 @@ void Application::ProcessKeyboard(void)
 	bool bMultiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
 		sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
 
-	float fMultiplier = 3.0f;
+	float fMultiplier = 1.0f;
 
 	if (bMultiplier)
 		fMultiplier = 5.0f;
 
-	// move up 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-	{
-		/*		m_pCameraMngr->MoveForward(m_fMovementSpeed * fMultiplier);
-		position += (m_fMovementSpeed * fMultiplier) * forward;
-		target += (m_fMovementSpeed * fMultiplier) * forward;*/
+		m_pCameraMngr->MoveVertical(m_fMovementSpeed * fMultiplier);
 
-		shipPos += vector3(0.0f, 1.0f, 0.0f) * (m_fMovementSpeed * fMultiplier);
-		shipTar += vector3(0.0f, 1.0f, 0.0f) * (m_fMovementSpeed * fMultiplier);
-		shipAbove += vector3(0.0f, 1.0f, 0.0f) * (m_fMovementSpeed * fMultiplier);
-
-		shipFor = glm::normalize(shipTar - shipPos);
-		shipUp = glm::normalize(shipAbove - shipPos);
-		shipRight = glm::normalize(glm::cross(shipFor, shipUp));
-	}
-	// move down
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-	{
-		shipPos += vector3(0.0f, 1.0f, 0.0f) * -(m_fMovementSpeed * fMultiplier);
-		shipTar += vector3(0.0f, 1.0f, 0.0f) * -(m_fMovementSpeed * fMultiplier);
-		shipAbove += vector3(0.0f, 1.0f, 0.0f) * -(m_fMovementSpeed * fMultiplier);
+		m_pCameraMngr->MoveVertical(-m_fMovementSpeed * fMultiplier);
 
-		shipFor = glm::normalize(shipTar - shipPos);
-		shipUp = glm::normalize(shipAbove - shipPos);
-		shipRight = glm::normalize(glm::cross(shipFor, shipUp));
-	}
-	// move left
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	{
-		shipPos += shipRight * (m_fMovementSpeed * fMultiplier);
-		shipTar += shipRight * (m_fMovementSpeed * fMultiplier);
-		shipAbove += shipRight * (m_fMovementSpeed * fMultiplier);
+		m_pCameraMngr->MoveSideways(-m_fMovementSpeed * fMultiplier);
 
-		shipFor = glm::normalize(shipTar - shipPos);
-		shipUp = glm::normalize(shipAbove - shipPos);
-		shipRight = glm::normalize(glm::cross(shipFor, shipUp));
-	}
-	// move right
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		m_pCameraMngr->MoveSideways(m_fMovementSpeed * fMultiplier);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
 	{
-		shipPos += shipRight * -(m_fMovementSpeed * fMultiplier);
-		shipTar += shipRight * -(m_fMovementSpeed * fMultiplier);
-		shipAbove += shipRight * -(m_fMovementSpeed * fMultiplier);
-
-		shipFor = glm::normalize(shipTar - shipPos);
-		shipUp = glm::normalize(shipAbove - shipPos);
-		shipRight = glm::normalize(glm::cross(shipFor, shipUp));
+		vector3 v3Position = m_pCameraMngr->GetPosition();
+		vector3 v3Velocity = m_pCameraMngr->GetForward() * .5f;
+		quaternion qRotation = IDENTITY_QUAT;
+		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
+		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
+		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
+		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
+		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
 	}
-#pragma endregion
 
+	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		//m_pCameraMngr->MoveVertical(-m_fMovementSpeed * fMultiplier);
+
+	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+		//m_pCameraMngr->MoveVertical(m_fMovementSpeed * fMultiplier);
+#pragma endregion
 }
 //Joystick
 void Application::ProcessJoystick(void)

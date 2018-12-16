@@ -51,13 +51,13 @@ enum ControllerModel_
 	mean that Windows knows how to use it though. Check
 	the controller properties, if it does not register
 	there, it will not register here unless other
-	libraries are used. 
+	libraries are used.
 	-There are packages like ScToolKit that will make
 	not natively supported controllers work under
 	Windows, but they will register as if a 360
 	controller was plugged in.
 	-This is a list of proven controllers, special
-	configurations might be needed and some are 
+	configurations might be needed and some are
 	provided in the .cpp
 	*/
 	SimplexController_NONE,
@@ -86,7 +86,7 @@ struct ControllerInput
 	int mapButton[15];
 	int mapAxis[8];
 	float axis[8];
-	
+
 	ControllerInput(unsigned int nVendorID = 0, unsigned int nProductID = 0);
 
 private:

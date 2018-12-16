@@ -2,180 +2,143 @@
 using namespace Simplex;
 void Application::InitVariables(void)
 {
-	m_pEntityMngr = MyEntityManager::GetInstance();
-#pragma region DOES NOT NEED CHANGES
-	
-	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(AXIS_Z * 35.0f,
-		ZERO_V3, 
+	//Set the position and target of the camera
+	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(vector3(0.0f, 0.0f, 100.0f),
+		vector3(0.0f, 0.0f, 99.0f),
 		AXIS_Y);
-	
-	shipPos = vector3(0.0f, 3.0f, 20.0f);
-	shipTar = vector3(0.0f, 3.0f, 19.0f);
-	shipFor = glm::normalize(shipTar - shipPos);
-	shipUp = glm::normalize(shipAbove - shipPos);
-	shipRight = glm::normalize(glm::cross(shipFor, shipUp));
 
-	// IGNORE THESE TWO THINGS IF WE GET RID OF THEM THEY THROW AN EXCEPTION
-	m_pGuideCube = new MyMesh();
-	m_pGuideCube->GenerateCube(10.0f, C_WHITE);
+	m_pLightMngr->SetPosition(vector3(0.0f, 3.0f, 13.0f), 1); //set the position of first light (0 is reserved for ambient light)
 
-	m_pMesh = new MyMesh();
-	//m_pMesh->GenerateCone(1.0f, 2.0f, 8, vector3(0.0f, 0.0f, 0.0f));
-	for (uint i = 0; i < 10; i++)
-	{
-		m_pEntityMngr->AddEntity("Minecraft\\Cube.obj");
+#ifdef DEBUG
+	uint uInstances = 900;
+#else
+	uint uInstances = 1849;
+#endif
+	crosshair = new Mesh();
+	crosshair->GeneratePlane(.008f, C_WHITE);
 
-		asteroidPos.push_back(vector3(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 - 50));
-		directions.push_back(rand() % 6 + 1);
-		aster = new Model();
-		aster->Load("Minecraft\\Cube.obj");
-		asterRB.push_back(new MyRigidBody(aster->GetVertexList()));
-	}
-	
-	pShip = new Model();
-	pShip->Load("Minecraft\\Steve.obj");
-	playerRB = new MyRigidBody(pShip->GetVertexList());
+	ground = new Mesh();
+	ground->GeneratePlane(300, C_BROWN);
 
-	//camera = new MyCamera();
-	lazer = new Model();
-	lazer->Load("Planets\\03A_Moon.obj");
+	uint uIndex = -1;
+	SetTargets(uIndex, m_pEntityMngr);
 
-	xCam = 0.0f;
-	yCam = 3.0f;
-	zCam = 20.0f;
-	//meshManager->SetCamera(camera);
-
-#pragma endregion
 	m_uOctantLevels = 1;
 	m_pRoot = new MyOctant(m_uOctantLevels, 5);
 	m_pEntityMngr->Update();
-	m_pRoot->IsColliding();
+}
+void Application::SetTargets(uint& index, MyEntityManager* entities)
+{
+	index++;
+	entities->AddEntity("Minecraft\\Cube.fbx");
+	vector3 v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	matrix4 m4Position = glm::translate(v3Position);
+	//matrix4 m4Position = glm::translate(v3Position) * glm::rotate(IDENTITY_M4, glm::radians(90.0f), vector3(1.0f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, glm::radians(90.0f), vector3(0.0f, 0.0f, 1.0f));
+	entities->SetModelMatrix(m4Position);
 
-	//Please change to your name and email
-	m_sProgramer = "Nathan Hambley - nhambley6@gmail.com\nConor Lilley - conorqlilley@gmail.com\nFrederick DiTondo - fredsemail@gmail.com";
+	index++;
+	entities->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	entities->SetModelMatrix(m4Position);
+
+	index++;
+	entities->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	entities->SetModelMatrix(m4Position);
+
+	index++;
+	entities->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	entities->SetModelMatrix(m4Position);
+
+	index++;
+	entities->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	entities->SetModelMatrix(m4Position);
+
+	index++;
+	entities->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	entities->SetModelMatrix(m4Position);
+
+	index++;
+	entities->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	entities->SetModelMatrix(m4Position);
+
+	index++;
+	entities->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	entities->SetModelMatrix(m4Position);
 }
 void Application::Update(void)
 {
-#pragma region DOES NOT NEED CHANGES
-	/*
-		This updates the internal clock of the Simplex library and process the Arcball
-	*/
 	//Update the system so it knows how much time has passed since the last call
 	m_pSystem->Update();
 
-	//Is the arcball active?
+	//Is the ArcBall active?
 	ArcBall();
 
-	// Is the first person camera active?
+	//Is the first person camera active?
 	CameraRotation();
 
-	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(vector3(shipPos.x, shipPos.y + 1, shipPos.z + 1),
-		shipPos + vector3(0.0f, 1.0f, 0.0f),
-		AXIS_Y);
-
-	//track movement of asteroids **still needs octree
-	for (uint i = 0; i < 10; i++)
+	//Assign IDs to the dynamic entities and static entities
+	if (octantActive)
 	{
-		if (directions[i] == 1)
-		{
-			asteroidPos[i].x -= .01; 
-		}
-		else if (directions[i] == 2)
-		{
-			asteroidPos[i].x += .01;
-		}
-		else if (directions[i] == 3)
-		{
-			asteroidPos[i].z -= .01;
-		}
-		else if (directions[i] == 4)
-		{
-			asteroidPos[i].z += .01;
-		}
-		else if (directions[i] == 5)
-		{
-			asteroidPos[i].y -= .01;
-		}
-		else if (directions[i] == 6)
-		{
-			asteroidPos[i].y += .01;
-		}
-		matrix4 m4Pos = glm::translate(asteroidPos[i]);
-		asterRB[i]->SetModelMatrix(m4Pos);
-		m_pEntityMngr->SetModelMatrix(m4Pos);
-
-		//Update Entity Manager
-		m_pEntityMngr->Update();
-
-		//Add objects to render list
-		m_pEntityMngr->AddEntityToRenderList(-1, true);
+		m_pRoot->AssignIDtoOutEntity();
+		m_pRoot->AssignIDtoEntity();
 	}
 
-
-	// move any lazers if there are any in the scene
-	for (uint i = 0; i < lazerPos.size(); i++)
+	//Defaults the entites to the 
+	if (!octantActive)
 	{
-		lazerPos[i] += moveLazer[i];
-		matrix4 m4Lazer = glm::translate(lazerPos[i]) * ToMatrix4(qLazer);
-		lazer->SetModelMatrix(m4Lazer);
-		lazerRB[i]->SetModelMatrix(m4Lazer);
-		m_pMeshMngr->AddAxisToRenderList(m4Lazer);
-		lazer->AddToRenderList();
-		lazerRB[i]->AddToRenderList();
+		int sObjects = m_pEntityMngr->GetEntityCount();
+		int dObjects = MyDynamicEntityManager::GetInstance()->GetEntityCount();
 
-		// check if a lazer has gone way off the reservation
-		if (lazerPos[i].z < -50.0f)
-		{
-			// remove its information from the vectors
-			lazerPos.erase(lazerPos.begin() + i);
-			lazerRB.erase(lazerRB.begin() + i);
-			moveLazer.erase(moveLazer.begin() + i);
-		}
+		m_pEntityMngr->ClearDimensionSetAll();
+		MyDynamicEntityManager::GetInstance()->ClearDimensionSetAll();
 	}
-	
-	 //set player ship stuff
-	matrix4 mPlayer = glm::translate(shipPos) * ToMatrix4(qShip) * ToMatrix4(m_qArcBall) * glm::rotate(IDENTITY_M4, glm::radians(-90.0f), AXIS_X);
-	pShip->SetModelMatrix(mPlayer);
-	playerRB->SetModelMatrix(mPlayer);
-	m_pMeshMngr->AddAxisToRenderList(mPlayer);
 
-	pShip->AddToRenderList();
-	playerRB->AddToRenderList();
+	//Update Entity Manager
+	m_pEntityMngr->Update();
+	MyDynamicEntityManager::GetInstance()->Update();
 
-	bool bColliding = false;
-	uint i = 0;
-	while (!bColliding&&i<10)
-	{
-		bColliding = playerRB->IsColliding(asterRB[i]);
-		i++;
-	}
-	m_pMeshMngr->Print("\nColliding: ");
-	if (bColliding)
-		m_pMeshMngr->PrintLine("YES!", C_RED);
-	else
-		m_pMeshMngr->PrintLine("no", C_YELLOW);
-	
-#pragma endregion
+	//Add objects to render list
+	m_pEntityMngr->AddEntityToRenderList(-1, true);
+	MyDynamicEntityManager::GetInstance()->AddEntityToRenderList(-1, true);
 }
 void Application::Display(void)
 {
 	// Clear the screen
 	ClearScreen();
 
-	if (display)
+	//display octree
+	if (octantDisplay)
 	{
-		m_pRoot->Display();
+		if (m_uOctantID == -1)
+			m_pRoot->Display();
+		else
+			m_pRoot->Display(m_uOctantID);
 	}
 
-	matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
-	matrix4 m4View = m_pCameraMngr->GetViewMatrix();
-	matrix4 m4Orientation;
-	//std::vector<vector3> cubePoints = m_pGuideCube->GetVertexList();
+	if (!octantActive)
+		m_pRoot->Display(vector3(1.0f, 0.0f, 0.0f));
 
+	//render cursor on camera plane
+	matrix4 cameraPlane = m_pCameraMngr->GetCameraPlane();
+	cameraPlane = glm::scale(cameraPlane, vector3(9.0f / 16.0f, 1, 1)); //divide the matrix by the aspect ratio to fix scaling on the x-axis
+	crosshair->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), cameraPlane);
 
-	matrix4 m4Model = ToMatrix4(m_qArcBall) /* glm::translate(IDENTITY_M4, v3CurrentPos) */ * m4Orientation;
-
-	m_pMesh->Render(m4Projection, m4View, m4Model);
+	//render ground
+	matrix4 m4Position = glm::rotate(glm::translate(vector3(0, -5, 0)), glm::radians(-90.0f), AXIS_X);
+	ground->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), m4Position);
 
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
@@ -186,22 +149,79 @@ void Application::Display(void)
 	//clear the render list
 	m_pMeshMngr->ClearRenderList();
 
-	//draw gui
+	//draw gui,
 	DrawGUI();
 
 	//end the current frame (internally swaps the front and back buffers)
 	m_pWindow->display();
 }
-
 void Application::Release(void)
 {
+	SafeDelete(m_pRoot);
 	//release GUI
 	ShutdownGUI();
+}
+void Application::Restart()
+{
+	while (m_pEntityMngr->GetEntityCount() > 0)
+		m_pEntityMngr->RemoveEntity(m_pEntityMngr->GetUniqueID());
 
-	//I already deallocated the memory for the meshes if you allocate new memory please
-	//deallocate it before ending the program
-	SafeDelete(m_pMesh);
-	SafeDelete(m_pGuideCube);
-	SafeDelete(pShip);
-	SafeDelete(aster);
+	while (MyDynamicEntityManager::GetInstance()->GetEntityCount() > 0)
+		MyDynamicEntityManager::GetInstance()->RemoveEntity(MyDynamicEntityManager::GetInstance()->GetUniqueID());
+
+	MyDynamicEntityManager::GetInstance()->SetScore(0);
+
+	uint uIndex = -1;
+	uIndex++;
+
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.fbx");
+	vector3 v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	matrix4 m4Position = glm::translate(v3Position);
+	m_pEntityMngr->SetModelMatrix(m4Position);
+
+	uIndex++;
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	m_pEntityMngr->SetModelMatrix(m4Position);
+
+	uIndex++;
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	m_pEntityMngr->SetModelMatrix(m4Position);
+
+	uIndex++;
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	m_pEntityMngr->SetModelMatrix(m4Position);
+
+	uIndex++;
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	m_pEntityMngr->SetModelMatrix(m4Position);
+
+	uIndex++;
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	m_pEntityMngr->SetModelMatrix(m4Position);
+
+	uIndex++;
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	m_pEntityMngr->SetModelMatrix(m4Position);
+
+	uIndex++;
+	m_pEntityMngr->AddEntity("Minecraft\\Cube.fbx");
+	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
+	m4Position = glm::translate(v3Position);
+	m_pEntityMngr->SetModelMatrix(m4Position);
+
+	SafeDelete(m_pRoot);
+	m_pRoot = new MyOctant(m_uOctantLevels, 5);
+	m_pEntityMngr->Update();
 }
