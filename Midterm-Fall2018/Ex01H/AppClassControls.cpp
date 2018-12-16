@@ -59,8 +59,8 @@ void Application::ProcessMouseReleased(sf::Event a_event)
 void Application::FireLazer()
 {
 	lazerRB.push_back(new MyRigidBody(lazer->GetVertexList()));
-	lazerPos.push_back(m_pCameraMngr->GetPosition());
-	moveLazer.push_back(shipTar - m_pCameraMngr->GetPosition());
+	lazerPos.push_back(shipPos + vector3(0.0f, 0.0f, -2.0f));
+	moveLazer.push_back((m_pCameraMngr->GetPosition() + vector3(0.0f, 0.0f, -1.0f)) - m_pCameraMngr->GetPosition());
 }
 void Application::ProcessMouseScroll(sf::Event a_event)
 {
@@ -396,12 +396,14 @@ void Application::CameraRotation(float a_fSpeed)
 		fDeltaMouse = static_cast<float>(CenterX - MouseX);
 		fAngleY += fDeltaMouse * a_fSpeed;
 		//shipTar = glm::rotate(shipTar, fAngleY, vector3(0.0f, 1.0f, 0.0f));
+		//m_qArcBall = quaternion(vector3(0.0f, glm::radians(a_fSpeed * fDeltaMouse), 0.0f) * m_qArcBall);
 	}
 	else if (MouseX > CenterX)
 	{
 		fDeltaMouse = static_cast<float>(MouseX - CenterX);
 		fAngleY -= fDeltaMouse * a_fSpeed;
 		//shipTar = glm::rotate(shipTar, fAngleY, vector3(0.0f, 1.0f, 0.0f));
+		//m_qArcBall = quaternion(vector3(0.0f, glm::radians(-a_fSpeed * fDeltaMouse), 0.0f) * m_qArcBall);
 	}
 
 	if (MouseY < CenterY)
@@ -409,16 +411,18 @@ void Application::CameraRotation(float a_fSpeed)
 		fDeltaMouse = static_cast<float>(CenterY - MouseY);
 		fAngleX -= fDeltaMouse * a_fSpeed;
 		//shipTar = glm::rotate(shipTar, fAngleX, vector3(1.0f, 0.0f, 0.0f));
+		//m_qArcBall = quaternion(vector3(glm::radians(-a_fSpeed * fDeltaMouse), 0.0f, 0.0f) * m_qArcBall);
 	}
 	else if (MouseY > CenterY)
 	{
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
 		//shipTar = glm::rotate(shipTar, fAngleY, vector3(1.0f, 0.0f, 0.0f));
+		//m_qArcBall = quaternion(vector3(glm::radians(a_fSpeed * fDeltaMouse), 0.0f, 0.0f) * m_qArcBall);
 	}
 	//Change the Yaw and the Pitch of the camera
-	m_pCameraMngr->ChangeYaw(fAngleY * 0.25f);
-	m_pCameraMngr->ChangePitch(-fAngleX * 0.25f);
+	//m_pCameraMngr->ChangeYaw(fAngleY * 0.25f);
+	//m_pCameraMngr->ChangePitch(-fAngleX * 0.25f);
 	shipFor = glm::normalize(shipTar - shipPos);
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
@@ -440,32 +444,33 @@ void Application::ProcessKeyboard(void)
 	if (bMultiplier)
 		fMultiplier = 5.0f;
 
+	// move up 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		/*		m_pCameraMngr->MoveForward(m_fMovementSpeed * fMultiplier);
 		position += (m_fMovementSpeed * fMultiplier) * forward;
 		target += (m_fMovementSpeed * fMultiplier) * forward;*/
 
-		shipPos += shipFor * (m_fMovementSpeed * fMultiplier);
-		shipTar += shipFor * (m_fMovementSpeed * fMultiplier);
-		shipAbove += shipFor * (m_fMovementSpeed * fMultiplier);
+		shipPos += vector3(0.0f, 1.0f, 0.0f) * (m_fMovementSpeed * fMultiplier);
+		shipTar += vector3(0.0f, 1.0f, 0.0f) * (m_fMovementSpeed * fMultiplier);
+		shipAbove += vector3(0.0f, 1.0f, 0.0f) * (m_fMovementSpeed * fMultiplier);
 
 		shipFor = glm::normalize(shipTar - shipPos);
 		shipUp = glm::normalize(shipAbove - shipPos);
 		shipRight = glm::normalize(glm::cross(shipFor, shipUp));
 	}
-
+	// move down
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		shipPos += shipFor * -(m_fMovementSpeed * fMultiplier);
-		shipTar += shipFor * -(m_fMovementSpeed * fMultiplier);
-		shipAbove += shipFor * -(m_fMovementSpeed * fMultiplier);
+		shipPos += vector3(0.0f, 1.0f, 0.0f) * -(m_fMovementSpeed * fMultiplier);
+		shipTar += vector3(0.0f, 1.0f, 0.0f) * -(m_fMovementSpeed * fMultiplier);
+		shipAbove += vector3(0.0f, 1.0f, 0.0f) * -(m_fMovementSpeed * fMultiplier);
 
 		shipFor = glm::normalize(shipTar - shipPos);
 		shipUp = glm::normalize(shipAbove - shipPos);
 		shipRight = glm::normalize(glm::cross(shipFor, shipUp));
 	}
-	
+	// move left
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		shipPos += shipRight * (m_fMovementSpeed * fMultiplier);
@@ -476,7 +481,7 @@ void Application::ProcessKeyboard(void)
 		shipUp = glm::normalize(shipAbove - shipPos);
 		shipRight = glm::normalize(glm::cross(shipFor, shipUp));
 	}
-
+	// move right
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		shipPos += shipRight * -(m_fMovementSpeed * fMultiplier);

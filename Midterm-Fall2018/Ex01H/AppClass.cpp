@@ -4,11 +4,7 @@ void Application::InitVariables(void)
 {
 	m_pEntityMngr = MyEntityManager::GetInstance();
 #pragma region DOES NOT NEED CHANGES
-	/*
-		This part initialize the camera position so I can see the scene better; 
-		the guide cube and the tip of the pencil so all solutions on the exam 
-		look the same to the grader
-	*/
+	
 	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(AXIS_Z * 35.0f,
 		ZERO_V3, 
 		AXIS_Y);
@@ -42,7 +38,7 @@ void Application::InitVariables(void)
 
 	//camera = new MyCamera();
 	lazer = new Model();
-	lazer->Load("Minecraft\\Steve.obj");
+	lazer->Load("Planets\\03A_Moon.obj");
 
 	xCam = 0.0f;
 	yCam = 3.0f;
@@ -72,6 +68,10 @@ void Application::Update(void)
 
 	// Is the first person camera active?
 	CameraRotation();
+
+	(m_pCameraMngr->GetCamera(-1))->SetPositionTargetAndUpward(vector3(shipPos.x, shipPos.y + 1, shipPos.z + 1),
+		shipPos + vector3(0.0f, 1.0f, 0.0f),
+		AXIS_Y);
 
 	//track movement of asteroids **still needs octree
 	for (uint i = 0; i < 10; i++)
@@ -122,6 +122,15 @@ void Application::Update(void)
 		m_pMeshMngr->AddAxisToRenderList(m4Lazer);
 		lazer->AddToRenderList();
 		lazerRB[i]->AddToRenderList();
+
+		// check if a lazer has gone way off the reservation
+		if (lazerPos[i].z < -50.0f)
+		{
+			// remove its information from the vectors
+			lazerPos.erase(lazerPos.begin() + i);
+			lazerRB.erase(lazerRB.begin() + i);
+			moveLazer.erase(moveLazer.begin() + i);
+		}
 	}
 	
 	 //set player ship stuff
