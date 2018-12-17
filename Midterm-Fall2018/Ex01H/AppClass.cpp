@@ -29,62 +29,32 @@ void Application::InitVariables(void)
 }
 void Application::SetTargets(uint& index, MyEntityManager* entities)
 {
-	index++;
-	entities->AddEntity("Minecraft\\Cube.fbx");
-	vector3 v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	matrix4 m4Position = glm::translate(v3Position);
-	//matrix4 m4Position = glm::translate(v3Position) * glm::rotate(IDENTITY_M4, glm::radians(90.0f), vector3(1.0f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, glm::radians(90.0f), vector3(0.0f, 0.0f, 1.0f));
-	entities->SetModelMatrix(m4Position);
 
+	int numTargets = glm::linearRand(20, 45);
 
-
-	index++;
-	entities->AddEntity("Minecraft\\Cube.fbx");
-	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	m4Position = glm::translate(v3Position);
-	entities->SetModelMatrix(m4Position);
-
-	index++;
-	entities->AddEntity("Minecraft\\Cube.fbx");
-	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	m4Position = glm::translate(v3Position);
-	entities->SetModelMatrix(m4Position);
-
-	index++;
-	entities->AddEntity("Minecraft\\Cube.fbx");
-	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	m4Position = glm::translate(v3Position);
-	entities->SetModelMatrix(m4Position);
-
-	index++;
-	entities->AddEntity("Minecraft\\Cube.fbx");
-	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	m4Position = glm::translate(v3Position);
-	entities->SetModelMatrix(m4Position);
-
-	index++;
-	entities->AddEntity("Minecraft\\Cube.fbx");
-	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	m4Position = glm::translate(v3Position);
-	entities->SetModelMatrix(m4Position);
-
-	index++;
-	entities->AddEntity("Minecraft\\Cube.fbx");
-	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	m4Position = glm::translate(v3Position);
-	entities->SetModelMatrix(m4Position);
-
-	index++;
-	entities->AddEntity("Minecraft\\Cube.fbx");
-	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	m4Position = glm::translate(v3Position);
-	entities->SetModelMatrix(m4Position);
-
-	index++;
-	entities->AddEntity("Minecraft\\Steve.fbx");
-	v3Position = vector3(rand() % 16 - 8, rand() % 16, rand() % 25 + 60);
-	m4Position = glm::translate(v3Position);
-	entities->SetModelMatrix(m4Position);
+	for (size_t i = 0; i < numTargets; i++)
+	{
+		vector3 v3Position;
+		matrix4 m4Position;
+		// pick a type of target
+		int targetType = glm::linearRand(1, 10);
+		if (targetType % 2 == 0)
+		{
+			index++;
+			entities->AddEntity("Minecraft\\Cube.fbx");
+			v3Position = vector3(glm::linearRand(-30, 30), glm::linearRand(0, 16), glm::linearRand(60, 75));
+			m4Position = glm::translate(v3Position);
+			entities->SetModelMatrix(m4Position);
+		}
+		else if (targetType % 2 != 0)
+		{
+			index++;
+			entities->AddEntity("Minecraft\\Steve.fbx");
+			v3Position = vector3(glm::linearRand(-30, 30), glm::linearRand(0, 16), glm::linearRand(60, 75));
+			m4Position = glm::translate(v3Position);
+			entities->SetModelMatrix(m4Position);
+		}
+	}
 }
 void Application::Update(void)
 {
@@ -113,6 +83,8 @@ void Application::Update(void)
 		m_pEntityMngr->ClearDimensionSetAll();
 		MyDynamicEntityManager::GetInstance()->ClearDimensionSetAll();
 	}
+
+
 
 	//Update Entity Manager
 	m_pEntityMngr->Update();
@@ -148,6 +120,15 @@ void Application::Display(void)
 	matrix4 m4Position = glm::rotate(glm::translate(vector3(0, -5, 0)), glm::radians(-90.0f), AXIS_X);
 	ground->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), m4Position);
 
+
+	static uint clock = m_pSystem->GenClock();
+	timer += m_pSystem->GetDeltaTime(clock);
+
+	// it the timer is finished pause the game state
+	if (timer > 30.0f)
+	{
+		m_pMeshMngr->ClearRenderList();
+	}
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 
@@ -162,6 +143,8 @@ void Application::Display(void)
 
 	//end the current frame (internally swaps the front and back buffers)
 	m_pWindow->display();
+
+	
 }
 void Application::Release(void)
 {

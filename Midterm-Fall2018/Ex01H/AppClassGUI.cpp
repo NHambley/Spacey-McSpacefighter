@@ -26,7 +26,7 @@ void Application::DrawGUI(void)
 
 	//m_pMeshMngr->Print("						");
 	m_pMeshMngr->Print("Time: ");
-	m_pMeshMngr->Print(std::to_string((m_pSystem->GenClock()/10)), C_RED);
+	m_pMeshMngr->Print(std::to_string(timer), C_RED);
 	m_pMeshMngr->Print(" seconds", C_RED);
 
 #pragma endregion
@@ -54,10 +54,10 @@ void Application::DrawGUI(void)
 			ImGui::Separator();
 			ImGui::Text("Control:\n");
 			ImGui::Text("	WASD: Movement\n");
-			ImGui::Text("	Right Click: Aim\n");
-			ImGui::Text("	Spacebar: Shoot\n");
-			ImGui::Text("	G: Hold to Shoot (5 at a time)\n");
-			ImGui::Text("	R: Reset Level\n");
+			ImGui::Text("	Left Click: Shoot\n");
+			ImGui::Text("	Left Shift: Speed Up\n");
+			//ImGui::Text("	Right Click and Hold: Aim\n");
+			//ImGui::Text("	R: Reset Level\n");
 			ImGui::Text("	E: Toggle Octree\n");
 			ImGui::Separator();
 			ImGui::Text("Position:\n");

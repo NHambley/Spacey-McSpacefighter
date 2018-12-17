@@ -26,6 +26,7 @@ namespace Simplex
 		bool octantActive = true;//Toggle bool for whether the octree is active or not
 		bool octantDisplay = true;//Toggle octant display
 
+		float timer = 0;
 		Mesh* crosshair = nullptr;
 		Mesh* ground = nullptr;
 	private:

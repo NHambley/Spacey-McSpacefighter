@@ -31,7 +31,7 @@ void Application::ProcessMousePressed(sf::Event a_event)
 		break;
 	case sf::Mouse::Button::Right:
 		gui.m_bMousePressed[2] = true;
-		m_bFPC = true;
+		//m_bFPC = true;
 		break;
 	}
 
@@ -436,17 +436,6 @@ void Application::ProcessKeyboard(void)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		m_pCameraMngr->MoveSideways(m_fMovementSpeed * fMultiplier);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
-	{
-		vector3 v3Position = m_pCameraMngr->GetPosition();
-		vector3 v3Velocity = m_pCameraMngr->GetForward() * .5f;
-		quaternion qRotation = IDENTITY_QUAT;
-		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
-		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
-		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
-		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
-		MyDynamicEntityManager::GetInstance()->AddEntity(v3Velocity, v3Position, qRotation, "Minecraft\\Cube.fbx");
-	}
 
 	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 		//m_pCameraMngr->MoveVertical(-m_fMovementSpeed * fMultiplier);
