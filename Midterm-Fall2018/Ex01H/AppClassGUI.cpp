@@ -5,7 +5,7 @@ void Application::DrawGUI(void)
 {
 #pragma region Debugging Information
 	//Print info on the screen
-	uint nEmptyLines = 20;
+	uint nEmptyLines = 19;
 	for (uint i = 0; i < nEmptyLines; ++i)
 		m_pMeshMngr->PrintLine("");//Add a line on top
 	//m_pMeshMngr->Print("						");
@@ -23,6 +23,12 @@ void Application::DrawGUI(void)
 	//m_pMeshMngr->Print("						");
 	m_pMeshMngr->Print("Score:");
 	m_pMeshMngr->PrintLine(std::to_string(MyDynamicEntityManager::GetInstance()->GetScore()), C_RED);
+
+	//m_pMeshMngr->Print("						");
+	m_pMeshMngr->Print("Time: ");
+	m_pMeshMngr->Print(std::to_string((m_pSystem->GenClock()/10)), C_RED);
+	m_pMeshMngr->Print(" seconds", C_RED);
+
 #pragma endregion
 
 	//Calculate the window size to know how to draw
